@@ -198,6 +198,79 @@
 			outline-width: 3px;
 		}
 	}
+
+	#pwa-install-banner {
+		position: fixed;
+		left: 12px;
+		right: 12px;
+		bottom: 12px;
+		z-index: 1000001;
+		display: none;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 14px;
+		border-radius: 14px;
+		background: rgba(10, 23, 55, 0.96);
+		color: #fff;
+		box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	}
+
+	#pwa-install-banner.is-visible {
+		display: flex;
+	}
+
+	#pwa-install-copy {
+		flex: 1;
+		min-width: 0;
+		font-size: 13px;
+		line-height: 1.35;
+	}
+
+	#pwa-install-copy strong {
+		display: block;
+		margin-bottom: 2px;
+		font-size: 14px;
+	}
+
+	#pwa-install-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	#pwa-install-button,
+	#pwa-install-close {
+		border: 0;
+		border-radius: 999px;
+		cursor: pointer;
+		font: inherit;
+	}
+
+	#pwa-install-button {
+		padding: 10px 14px;
+		background: #ffffff;
+		color: #0a1737;
+		font-weight: 600;
+	}
+
+	#pwa-install-close {
+		width: 34px;
+		height: 34px;
+		background: rgba(255, 255, 255, 0.14);
+		color: #ffffff;
+		font-size: 18px;
+		line-height: 1;
+	}
+
+	@media (min-width: 768px) {
+		#pwa-install-banner {
+			max-width: 460px;
+			left: 16px;
+			right: auto;
+		}
+	}
 </style>
 </head>
 
@@ -282,6 +355,98 @@
 			});
 		});
 	}
+</script>
+<script>
+	(function () {
+		var isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+		if (isStandalone) {
+			return;
+		}
+
+		var ua = window.navigator.userAgent || "";
+		var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+		if (!isMobile) {
+			return;
+		}
+
+		var isIOS = /iPhone|iPad|iPod/i.test(ua);
+		var isSafari = /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|Android/i.test(ua);
+		var dismissedKey = "dre-contabil-install-dismissed-v1";
+		var deferredPrompt = null;
+
+		if (window.localStorage && window.localStorage.getItem(dismissedKey) === "1") {
+			return;
+		}
+
+		var banner = document.createElement("div");
+		banner.id = "pwa-install-banner";
+		banner.innerHTML =
+			'<div id="pwa-install-copy"></div>' +
+			'<div id="pwa-install-actions">' +
+			'<button id="pwa-install-button" type="button" hidden>Instalar</button>' +
+			'<button id="pwa-install-close" type="button" aria-label="Fechar">×</button>' +
+			"</div>";
+		document.body.appendChild(banner);
+
+		var copy = banner.querySelector("#pwa-install-copy");
+		var installButton = banner.querySelector("#pwa-install-button");
+		var closeButton = banner.querySelector("#pwa-install-close");
+
+		function showBanner(title, body, showInstallButton) {
+			copy.innerHTML = "<strong>" + title + "</strong><span>" + body + "</span>";
+			installButton.hidden = !showInstallButton;
+			banner.classList.add("is-visible");
+		}
+
+		function hideBanner(remember) {
+			banner.classList.remove("is-visible");
+			if (remember && window.localStorage) {
+				window.localStorage.setItem(dismissedKey, "1");
+			}
+		}
+
+		closeButton.addEventListener("click", function () {
+			hideBanner(true);
+		});
+
+		installButton.addEventListener("click", async function () {
+			if (!deferredPrompt) {
+				return;
+			}
+
+			deferredPrompt.prompt();
+			try {
+				await deferredPrompt.userChoice;
+			} catch (error) {
+				console.error("Falha ao abrir prompt de instalacao", error);
+			}
+			deferredPrompt = null;
+			hideBanner(false);
+		});
+
+		window.addEventListener("beforeinstallprompt", function (event) {
+			event.preventDefault();
+			deferredPrompt = event;
+			showBanner("Instale o app", "Toque em Instalar para colocar o DRE Contabil na tela inicial.", true);
+		});
+
+		window.addEventListener("appinstalled", function () {
+			hideBanner(false);
+		});
+
+		window.setTimeout(function () {
+			if (banner.classList.contains("is-visible")) {
+				return;
+			}
+
+			if (isIOS && isSafari) {
+				showBanner("Instale no iPhone", "Abra Compartilhar e toque em Adicionar a Tela de Inicio.", false);
+				return;
+			}
+
+			showBanner("Instalacao manual", "Se o botao nao aparecer, abra o menu do navegador e toque em Instalar app ou Adicionar a tela inicial.", false);
+		}, 1800);
+	})();
 </script>
 </body>
 </html>
