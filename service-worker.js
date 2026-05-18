@@ -1,14 +1,14 @@
-const CACHE_NAME = "big-compra-vision-pwa-v5";
+const CACHE_NAME = "big-compra-vision-pwa-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./404.html",
-  "./manifest.webmanifest?v=20260518-homeicon2",
+  "./manifest.webmanifest?v=20260518-homeicon3",
   "./assets/index-yXOMKJ6Y.js",
   "./assets/index-D7yLOWRD.css",
-  "./icons/icon-192-home-v2.png",
-  "./icons/icon-512-home-v2.png",
-  "./icons/apple-touch-icon-home-v2.png"
+  "./icons/icon-192-home-v3.png",
+  "./icons/icon-512-home-v3.png",
+  "./icons/apple-touch-icon-home-v3.png"
 ];
 
 self.addEventListener("install", (event) => {
