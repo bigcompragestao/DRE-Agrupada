@@ -1,7 +1,7 @@
 {
-  "name": "Big Compra Vision",
-  "short_name": "Big Compra",
-  "description": "Big Compra Vision em formato instalavel para tablet via PWA.",
+  "name": "DRE Contábil",
+  "short_name": "DRE Contábil",
+  "description": "DRE Contábil em formato instalavel para tablet via PWA.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
