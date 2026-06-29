@@ -1,10 +1,10 @@
-const CACHE_NAME = "big-compra-vision-pwa-v11";
+const CACHE_NAME = "big-compra-vision-pwa-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./404.html",
   "./manifest.webmanifest?v=20260623-cachefix1",
-  "./assets/index-yXOMKJ6Y.js",
+  "./assets/index-yXOMKJ6Y.js?v=20260629-blankfix1",
   "./assets/index-D7yLOWRD.css",
   "./icons/icon-192-home-v7.png",
   "./icons/icon-512-home-v7.png",
